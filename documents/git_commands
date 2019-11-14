@@ -1,0 +1,23 @@
+GIT commands
+
+** Ajout fichiers **
+** Attention à copier le fichier sur votre ordi
+   au cas où on merge pas tout de suite sur master **
+
+# se localiser dans le dossier:
+cd /Users/tanjamarkotic/Desktop/DMML2019_Team_Swatch-master
+# créer une nouvelle branche:
+git checkout -b "EDA_Tanja"
+# ajouter des fichiers:
+git add .
+git commit -m "just a try for git commits"
+git push
+# confirmer sur le site github.com en créant une pull request
+--> se mettre sur sa branche voir son dernier commit et créer une pr
+
+** Récup de la nouvelle version de master **
+# changer de branches:
+git checkout master
+git pull
+# regarder le status de la branche actuelle:
+git status
