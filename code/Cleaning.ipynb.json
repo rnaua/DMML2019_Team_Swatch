@@ -1,0 +1,1320 @@
+{
+ "cells": [
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "### Alvin's cleaning data"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 1,
+   "metadata": {
+    "colab": {},
+    "colab_type": "code",
+    "id": "aq9G7SGmWoTq"
+   },
+   "outputs": [],
+   "source": [
+    "# load helpful packages \n",
+    "import pandas as pd # data processing\n",
+    "import numpy as np # linear algebra"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 2,
+   "metadata": {
+    "colab": {
+     "base_uri": "https://localhost:8080/",
+     "height": 392
+    },
+    "colab_type": "code",
+    "id": "YDEsiaRnOgXm",
+    "outputId": "e4987fe2-c48c-4fbd-98e4-b33c8f36c2bb"
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "<div>\n",
+       "<style scoped>\n",
+       "    .dataframe tbody tr th:only-of-type {\n",
+       "        vertical-align: middle;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe tbody tr th {\n",
+       "        vertical-align: top;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe thead th {\n",
+       "        text-align: right;\n",
+       "    }\n",
+       "</style>\n",
+       "<table border=\"1\" class=\"dataframe\">\n",
+       "  <thead>\n",
+       "    <tr style=\"text-align: right;\">\n",
+       "      <th></th>\n",
+       "      <th>Port Name</th>\n",
+       "      <th>State</th>\n",
+       "      <th>Port Code</th>\n",
+       "      <th>Border</th>\n",
+       "      <th>Date</th>\n",
+       "      <th>Measure</th>\n",
+       "      <th>Value</th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "    <tr>\n",
+       "      <th>0</th>\n",
+       "      <td>Warroad</td>\n",
+       "      <td>Minnesota</td>\n",
+       "      <td>3423</td>\n",
+       "      <td>US-Canada Border</td>\n",
+       "      <td>06/01/2019 12:00:00 AM</td>\n",
+       "      <td>Truck Containers Full</td>\n",
+       "      <td>133</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>1</th>\n",
+       "      <td>Warroad</td>\n",
+       "      <td>Minnesota</td>\n",
+       "      <td>3423</td>\n",
+       "      <td>US-Canada Border</td>\n",
+       "      <td>06/01/2019 12:00:00 AM</td>\n",
+       "      <td>Truck Containers Empty</td>\n",
+       "      <td>298</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>2</th>\n",
+       "      <td>Warroad</td>\n",
+       "      <td>Minnesota</td>\n",
+       "      <td>3423</td>\n",
+       "      <td>US-Canada Border</td>\n",
+       "      <td>06/01/2019 12:00:00 AM</td>\n",
+       "      <td>Personal Vehicles</td>\n",
+       "      <td>10383</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>3</th>\n",
+       "      <td>Warroad</td>\n",
+       "      <td>Minnesota</td>\n",
+       "      <td>3423</td>\n",
+       "      <td>US-Canada Border</td>\n",
+       "      <td>06/01/2019 12:00:00 AM</td>\n",
+       "      <td>Personal Vehicle Passengers</td>\n",
+       "      <td>19459</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>4</th>\n",
+       "      <td>Warroad</td>\n",
+       "      <td>Minnesota</td>\n",
+       "      <td>3423</td>\n",
+       "      <td>US-Canada Border</td>\n",
+       "      <td>06/01/2019 12:00:00 AM</td>\n",
+       "      <td>Pedestrians</td>\n",
+       "      <td>2</td>\n",
+       "    </tr>\n",
+       "  </tbody>\n",
+       "</table>\n",
+       "</div>"
+      ],
+      "text/plain": [
+       "  Port Name      State  Port Code            Border                    Date  \\\n",
+       "0   Warroad  Minnesota       3423  US-Canada Border  06/01/2019 12:00:00 AM   \n",
+       "1   Warroad  Minnesota       3423  US-Canada Border  06/01/2019 12:00:00 AM   \n",
+       "2   Warroad  Minnesota       3423  US-Canada Border  06/01/2019 12:00:00 AM   \n",
+       "3   Warroad  Minnesota       3423  US-Canada Border  06/01/2019 12:00:00 AM   \n",
+       "4   Warroad  Minnesota       3423  US-Canada Border  06/01/2019 12:00:00 AM   \n",
+       "\n",
+       "                       Measure  Value  \n",
+       "0        Truck Containers Full    133  \n",
+       "1       Truck Containers Empty    298  \n",
+       "2            Personal Vehicles  10383  \n",
+       "3  Personal Vehicle Passengers  19459  \n",
+       "4                  Pedestrians      2  "
+      ]
+     },
+     "execution_count": 2,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "# load dataset\n",
+    "df=pd.read_csv(\"/Users/tanjamarkotic/Desktop/Border_Crossing_Entry_Data.csv\")\n",
+    "# \"each row has a counting (\"Value\") for the crossing method (\"Measure\")\"\n",
+    "df.head()"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 3,
+   "metadata": {
+    "colab": {},
+    "colab_type": "code",
+    "id": "Wy_y14ZQOi0n"
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "Port Name    object\n",
+       "State        object\n",
+       "Port Code     int64\n",
+       "Border       object\n",
+       "Date         object\n",
+       "Measure      object\n",
+       "Value         int64\n",
+       "dtype: object"
+      ]
+     },
+     "execution_count": 3,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "# check data types of features\n",
+    "df.dtypes"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 23,
+   "metadata": {
+    "colab": {},
+    "colab_type": "code",
+    "id": "tkdZWdt-Okjc"
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "Port Name            object\n",
+       "State                object\n",
+       "Port Code             int64\n",
+       "Border               object\n",
+       "Date         datetime64[ns]\n",
+       "Measure              object\n",
+       "Value                 int64\n",
+       "dtype: object"
+      ]
+     },
+     "execution_count": 23,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "# convert 'Date' to date format\n",
+    "df['Date'] = pd.to_datetime(df['Date'])\n",
+    "# recheck data type of 'Date'\n",
+    "df.dtypes"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# check if 2 possible values for 'Border'?\n",
+    "# check years included in dataset?"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 24,
+   "metadata": {
+    "colab": {},
+    "colab_type": "code",
+    "id": "6aMecpN7Ol3N"
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "<div>\n",
+       "<style scoped>\n",
+       "    .dataframe tbody tr th:only-of-type {\n",
+       "        vertical-align: middle;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe tbody tr th {\n",
+       "        vertical-align: top;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe thead th {\n",
+       "        text-align: right;\n",
+       "    }\n",
+       "</style>\n",
+       "<table border=\"1\" class=\"dataframe\">\n",
+       "  <thead>\n",
+       "    <tr style=\"text-align: right;\">\n",
+       "      <th></th>\n",
+       "      <th>Port Name</th>\n",
+       "      <th>State</th>\n",
+       "      <th>Port Code</th>\n",
+       "      <th>Border</th>\n",
+       "      <th>Date</th>\n",
+       "      <th>Measure</th>\n",
+       "      <th>Value</th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "    <tr>\n",
+       "      <th>0</th>\n",
+       "      <td>Warroad</td>\n",
+       "      <td>Minnesota</td>\n",
+       "      <td>3423</td>\n",
+       "      <td>US-Canada Border</td>\n",
+       "      <td>2019-06-01</td>\n",
+       "      <td>Truck Containers Full</td>\n",
+       "      <td>133</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>1</th>\n",
+       "      <td>Warroad</td>\n",
+       "      <td>Minnesota</td>\n",
+       "      <td>3423</td>\n",
+       "      <td>US-Canada Border</td>\n",
+       "      <td>2019-06-01</td>\n",
+       "      <td>Truck Containers Empty</td>\n",
+       "      <td>298</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>2</th>\n",
+       "      <td>Warroad</td>\n",
+       "      <td>Minnesota</td>\n",
+       "      <td>3423</td>\n",
+       "      <td>US-Canada Border</td>\n",
+       "      <td>2019-06-01</td>\n",
+       "      <td>Personal Vehicles</td>\n",
+       "      <td>10383</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>3</th>\n",
+       "      <td>Warroad</td>\n",
+       "      <td>Minnesota</td>\n",
+       "      <td>3423</td>\n",
+       "      <td>US-Canada Border</td>\n",
+       "      <td>2019-06-01</td>\n",
+       "      <td>Personal Vehicle Passengers</td>\n",
+       "      <td>19459</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>4</th>\n",
+       "      <td>Warroad</td>\n",
+       "      <td>Minnesota</td>\n",
+       "      <td>3423</td>\n",
+       "      <td>US-Canada Border</td>\n",
+       "      <td>2019-06-01</td>\n",
+       "      <td>Pedestrians</td>\n",
+       "      <td>2</td>\n",
+       "    </tr>\n",
+       "  </tbody>\n",
+       "</table>\n",
+       "</div>"
+      ],
+      "text/plain": [
+       "  Port Name      State  Port Code            Border       Date  \\\n",
+       "0   Warroad  Minnesota       3423  US-Canada Border 2019-06-01   \n",
+       "1   Warroad  Minnesota       3423  US-Canada Border 2019-06-01   \n",
+       "2   Warroad  Minnesota       3423  US-Canada Border 2019-06-01   \n",
+       "3   Warroad  Minnesota       3423  US-Canada Border 2019-06-01   \n",
+       "4   Warroad  Minnesota       3423  US-Canada Border 2019-06-01   \n",
+       "\n",
+       "                       Measure  Value  \n",
+       "0        Truck Containers Full    133  \n",
+       "1       Truck Containers Empty    298  \n",
+       "2            Personal Vehicles  10383  \n",
+       "3  Personal Vehicle Passengers  19459  \n",
+       "4                  Pedestrians      2  "
+      ]
+     },
+     "execution_count": 24,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "df.head()"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 25,
+   "metadata": {
+    "colab": {},
+    "colab_type": "code",
+    "id": "tmvDwDO7Opeh"
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "Port Name    False\n",
+       "State        False\n",
+       "Port Code    False\n",
+       "Border       False\n",
+       "Date         False\n",
+       "Measure      False\n",
+       "Value        False\n",
+       "dtype: bool"
+      ]
+     },
+     "execution_count": 25,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "# Look for missing values\n",
+    "df.isnull().any()"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 26,
+   "metadata": {
+    "colab": {},
+    "colab_type": "code",
+    "id": "iL78G5_sOri4"
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "port names : 117\n",
+      "port codes : 117\n"
+     ]
+    }
+   ],
+   "source": [
+    "# check if number of unique elements in \"Port Code\" and \"Port Name\" equal \n",
+    "print('port names : {}' .format(len(df['Port Name'].unique())))\n",
+    "print('port codes : {}' .format(len(df['Port Code'].unique())))"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 27,
+   "metadata": {
+    "colab": {},
+    "colab_type": "code",
+    "id": "BnqPRuiLOtMW"
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "<div>\n",
+       "<style scoped>\n",
+       "    .dataframe tbody tr th:only-of-type {\n",
+       "        vertical-align: middle;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe tbody tr th {\n",
+       "        vertical-align: top;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe thead th {\n",
+       "        text-align: right;\n",
+       "    }\n",
+       "</style>\n",
+       "<table border=\"1\" class=\"dataframe\">\n",
+       "  <thead>\n",
+       "    <tr style=\"text-align: right;\">\n",
+       "      <th></th>\n",
+       "      <th>Port Code</th>\n",
+       "      <th>Port Name</th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "  </tbody>\n",
+       "</table>\n",
+       "</div>"
+      ],
+      "text/plain": [
+       "Empty DataFrame\n",
+       "Columns: [Port Code, Port Name]\n",
+       "Index: []"
+      ]
+     },
+     "execution_count": 27,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "ports = df[['Port Code','Port Name']].drop_duplicates()\n",
+    "ports[ports['Port Name'].duplicated(keep=False)]"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 28,
+   "metadata": {
+    "colab": {},
+    "colab_type": "code",
+    "id": "n7SQpZ9tOvA6"
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "<div>\n",
+       "<style scoped>\n",
+       "    .dataframe tbody tr th:only-of-type {\n",
+       "        vertical-align: middle;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe tbody tr th {\n",
+       "        vertical-align: top;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe thead th {\n",
+       "        text-align: right;\n",
+       "    }\n",
+       "</style>\n",
+       "<table border=\"1\" class=\"dataframe\">\n",
+       "  <thead>\n",
+       "    <tr style=\"text-align: right;\">\n",
+       "      <th></th>\n",
+       "      <th>Port Name</th>\n",
+       "      <th>State</th>\n",
+       "      <th>Port Code</th>\n",
+       "      <th>Border</th>\n",
+       "      <th>Date</th>\n",
+       "      <th>Measure</th>\n",
+       "      <th>Value</th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "  </tbody>\n",
+       "</table>\n",
+       "</div>"
+      ],
+      "text/plain": [
+       "Empty DataFrame\n",
+       "Columns: [Port Name, State, Port Code, Border, Date, Measure, Value]\n",
+       "Index: []"
+      ]
+     },
+     "execution_count": 28,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "df.loc[df['Port Name'] == 'Eastport'].drop_duplicates(['Port Code'], keep='first')"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 29,
+   "metadata": {
+    "colab": {},
+    "colab_type": "code",
+    "id": "EJ7N2oVZOxKP"
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "<div>\n",
+       "<style scoped>\n",
+       "    .dataframe tbody tr th:only-of-type {\n",
+       "        vertical-align: middle;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe tbody tr th {\n",
+       "        vertical-align: top;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe thead th {\n",
+       "        text-align: right;\n",
+       "    }\n",
+       "</style>\n",
+       "<table border=\"1\" class=\"dataframe\">\n",
+       "  <thead>\n",
+       "    <tr style=\"text-align: right;\">\n",
+       "      <th></th>\n",
+       "      <th>Port Name</th>\n",
+       "      <th>State</th>\n",
+       "      <th>Port Code</th>\n",
+       "      <th>Border</th>\n",
+       "      <th>Date</th>\n",
+       "      <th>Measure</th>\n",
+       "      <th>Value</th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "    <tr>\n",
+       "      <th>525</th>\n",
+       "      <td>Eastport_ID</td>\n",
+       "      <td>Idaho</td>\n",
+       "      <td>3302</td>\n",
+       "      <td>US-Canada Border</td>\n",
+       "      <td>2019-06-01</td>\n",
+       "      <td>Bus Passengers</td>\n",
+       "      <td>43</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>562</th>\n",
+       "      <td>Eastport_MA</td>\n",
+       "      <td>Maine</td>\n",
+       "      <td>103</td>\n",
+       "      <td>US-Canada Border</td>\n",
+       "      <td>2019-06-01</td>\n",
+       "      <td>Bus Passengers</td>\n",
+       "      <td>179</td>\n",
+       "    </tr>\n",
+       "  </tbody>\n",
+       "</table>\n",
+       "</div>"
+      ],
+      "text/plain": [
+       "       Port Name  State  Port Code            Border       Date  \\\n",
+       "525  Eastport_ID  Idaho       3302  US-Canada Border 2019-06-01   \n",
+       "562  Eastport_MA  Maine        103  US-Canada Border 2019-06-01   \n",
+       "\n",
+       "            Measure  Value  \n",
+       "525  Bus Passengers     43  \n",
+       "562  Bus Passengers    179  "
+      ]
+     },
+     "execution_count": 29,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "# change 'Port Name' of Eastport Idaho and Eastport Maine\n",
+    "df.loc[(df['Port Name'] == 'Eastport') & (df['State'] == 'Idaho'), 'Port Name'] = 'Eastport_ID'\n",
+    "df.loc[(df['Port Name'] == 'Eastport') & (df['State'] == 'Maine'), 'Port Name'] = 'Eastport_MA'\n",
+    "df.loc[(df['Port Code'] == 3302) | (df['Port Code'] == 103)].drop_duplicates(['Port Code'], keep='first')"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 30,
+   "metadata": {
+    "colab": {},
+    "colab_type": "code",
+    "id": "-k-tEW-VOy8O"
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "port names : 117\n",
+      "port codes : 117\n"
+     ]
+    }
+   ],
+   "source": [
+    "# recheck if number of unique elements in \"Port Code\" and \"Port Name\" equal \n",
+    "print('port names : {}' .format(len(df['Port Name'].unique())))\n",
+    "print('port codes : {}' .format(len(df['Port Code'].unique())))"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "### EDA\n",
+    "Careful on:\n",
+    "- \"Among the 'Measure' types, 'Personal Vehicle Passengers', 'Bus Passengers','Pedestrians' and 'Train Passengers' count people, whereas the others count vehicles.\"\n",
+    "- tableau avec selon Border, les measures et les différentes somme de value?\n",
+    "- data from 1996 to 2019"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 39,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Measure types : 12\n"
+     ]
+    },
+    {
+     "data": {
+      "text/plain": [
+       "array(['Truck Containers Full', 'Truck Containers Empty',\n",
+       "       'Personal Vehicles', 'Personal Vehicle Passengers', 'Pedestrians',\n",
+       "       'Buses', 'Bus Passengers', 'Trucks', 'Trains', 'Train Passengers',\n",
+       "       'Rail Containers Full', 'Rail Containers Empty'], dtype=object)"
+      ]
+     },
+     "execution_count": 39,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "# check number of unique elements in 'Measure' \n",
+    "print('Measure types : {}' .format(len(df['Measure'].unique())))\n",
+    "df['Measure'].unique()"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 51,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "<div>\n",
+       "<style scoped>\n",
+       "    .dataframe tbody tr th:only-of-type {\n",
+       "        vertical-align: middle;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe tbody tr th {\n",
+       "        vertical-align: top;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe thead th {\n",
+       "        text-align: right;\n",
+       "    }\n",
+       "</style>\n",
+       "<table border=\"1\" class=\"dataframe\">\n",
+       "  <thead>\n",
+       "    <tr style=\"text-align: right;\">\n",
+       "      <th></th>\n",
+       "      <th>Value</th>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>Measure</th>\n",
+       "      <th></th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "    <tr>\n",
+       "      <th>Bus Passengers</th>\n",
+       "      <td>143388212</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>Buses</th>\n",
+       "      <td>8604318</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>Pedestrians</th>\n",
+       "      <td>1056699751</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>Personal Vehicle Passengers</th>\n",
+       "      <td>5504073464</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>Personal Vehicles</th>\n",
+       "      <td>2584776249</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>Rail Containers Empty</th>\n",
+       "      <td>21477185</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>Rail Containers Full</th>\n",
+       "      <td>38891558</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>Train Passengers</th>\n",
+       "      <td>6287351</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>Trains</th>\n",
+       "      <td>912969</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>Truck Containers Empty</th>\n",
+       "      <td>64852271</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>Truck Containers Full</th>\n",
+       "      <td>179543288</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>Trucks</th>\n",
+       "      <td>256762423</td>\n",
+       "    </tr>\n",
+       "  </tbody>\n",
+       "</table>\n",
+       "</div>"
+      ],
+      "text/plain": [
+       "                                  Value\n",
+       "Measure                                \n",
+       "Bus Passengers                143388212\n",
+       "Buses                           8604318\n",
+       "Pedestrians                  1056699751\n",
+       "Personal Vehicle Passengers  5504073464\n",
+       "Personal Vehicles            2584776249\n",
+       "Rail Containers Empty          21477185\n",
+       "Rail Containers Full           38891558\n",
+       "Train Passengers                6287351\n",
+       "Trains                           912969\n",
+       "Truck Containers Empty         64852271\n",
+       "Truck Containers Full         179543288\n",
+       "Trucks                        256762423"
+      ]
+     },
+     "execution_count": 51,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "# number of people or vehicles depending on the measure\n",
+    "df_measure = df[['Measure','Value']].groupby('Measure').sum()\n",
+    "df_measure"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 66,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "<div>\n",
+       "<style scoped>\n",
+       "    .dataframe tbody tr th:only-of-type {\n",
+       "        vertical-align: middle;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe tbody tr th {\n",
+       "        vertical-align: top;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe thead th {\n",
+       "        text-align: right;\n",
+       "    }\n",
+       "</style>\n",
+       "<table border=\"1\" class=\"dataframe\">\n",
+       "  <thead>\n",
+       "    <tr style=\"text-align: right;\">\n",
+       "      <th></th>\n",
+       "      <th>Value</th>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>Border</th>\n",
+       "      <th></th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "    <tr>\n",
+       "      <th>US-Canada Border</th>\n",
+       "      <td>2712940816</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>US-Mexico Border</th>\n",
+       "      <td>7153328223</td>\n",
+       "    </tr>\n",
+       "  </tbody>\n",
+       "</table>\n",
+       "</div>"
+      ],
+      "text/plain": [
+       "                       Value\n",
+       "Border                      \n",
+       "US-Canada Border  2712940816\n",
+       "US-Mexico Border  7153328223"
+      ]
+     },
+     "execution_count": 66,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "# number of people or vehicles depending on border\n",
+    "df_measure = df[['Border','Value']].groupby(['Border']).sum()\n",
+    "df_measure"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 69,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# separate measure of people counting\n",
+    "people = df[df['Measure'].isin(['Personal Vehicle Passengers', 'Bus Passengers','Pedestrians', 'Train Passengers'])]\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 70,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "<div>\n",
+       "<style scoped>\n",
+       "    .dataframe tbody tr th:only-of-type {\n",
+       "        vertical-align: middle;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe tbody tr th {\n",
+       "        vertical-align: top;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe thead th {\n",
+       "        text-align: right;\n",
+       "    }\n",
+       "</style>\n",
+       "<table border=\"1\" class=\"dataframe\">\n",
+       "  <thead>\n",
+       "    <tr style=\"text-align: right;\">\n",
+       "      <th></th>\n",
+       "      <th>Value</th>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>Border</th>\n",
+       "      <th></th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "    <tr>\n",
+       "      <th>US-Canada Border</th>\n",
+       "      <td>1645990588</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>US-Mexico Border</th>\n",
+       "      <td>5064458190</td>\n",
+       "    </tr>\n",
+       "  </tbody>\n",
+       "</table>\n",
+       "</div>"
+      ],
+      "text/plain": [
+       "                       Value\n",
+       "Border                      \n",
+       "US-Canada Border  1645990588\n",
+       "US-Mexico Border  5064458190"
+      ]
+     },
+     "execution_count": 70,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "# number of people depending on border\n",
+    "df_people = people[['Border','Value']].groupby('Border').sum()\n",
+    "df_people"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# piechart?"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 87,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "<div>\n",
+       "<style scoped>\n",
+       "    .dataframe tbody tr th:only-of-type {\n",
+       "        vertical-align: middle;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe tbody tr th {\n",
+       "        vertical-align: top;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe thead th {\n",
+       "        text-align: right;\n",
+       "    }\n",
+       "</style>\n",
+       "<table border=\"1\" class=\"dataframe\">\n",
+       "  <thead>\n",
+       "    <tr style=\"text-align: right;\">\n",
+       "      <th></th>\n",
+       "      <th></th>\n",
+       "      <th>Value</th>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>Date</th>\n",
+       "      <th>Border</th>\n",
+       "      <th></th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "    <tr>\n",
+       "      <th rowspan=\"2\" valign=\"top\">1996-01-01</th>\n",
+       "      <th>US-Canada Border</th>\n",
+       "      <td>6329802</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>US-Mexico Border</th>\n",
+       "      <td>17303826</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th rowspan=\"2\" valign=\"top\">1996-02-01</th>\n",
+       "      <th>US-Canada Border</th>\n",
+       "      <td>6774801</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>US-Mexico Border</th>\n",
+       "      <td>16648997</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th rowspan=\"2\" valign=\"top\">1996-03-01</th>\n",
+       "      <th>US-Canada Border</th>\n",
+       "      <td>7188110</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>US-Mexico Border</th>\n",
+       "      <td>18571812</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th rowspan=\"2\" valign=\"top\">1996-04-01</th>\n",
+       "      <th>US-Canada Border</th>\n",
+       "      <td>8098225</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>US-Mexico Border</th>\n",
+       "      <td>18113328</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th rowspan=\"2\" valign=\"top\">1996-05-01</th>\n",
+       "      <th>US-Canada Border</th>\n",
+       "      <td>9171578</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>US-Mexico Border</th>\n",
+       "      <td>18272632</td>\n",
+       "    </tr>\n",
+       "  </tbody>\n",
+       "</table>\n",
+       "</div>"
+      ],
+      "text/plain": [
+       "                                Value\n",
+       "Date       Border                    \n",
+       "1996-01-01 US-Canada Border   6329802\n",
+       "           US-Mexico Border  17303826\n",
+       "1996-02-01 US-Canada Border   6774801\n",
+       "           US-Mexico Border  16648997\n",
+       "1996-03-01 US-Canada Border   7188110\n",
+       "           US-Mexico Border  18571812\n",
+       "1996-04-01 US-Canada Border   8098225\n",
+       "           US-Mexico Border  18113328\n",
+       "1996-05-01 US-Canada Border   9171578\n",
+       "           US-Mexico Border  18272632"
+      ]
+     },
+     "execution_count": 87,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "# consider people counting measure, sum value and set date as index\n",
+    "df_date = people[['Date','Border','Value']].set_index('Date')\n",
+    "# group by date and border\n",
+    "df_date = df_date.groupby(['Date', 'Border']).sum()\n",
+    "df_date.head(10)\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 88,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "<div>\n",
+       "<style scoped>\n",
+       "    .dataframe tbody tr th:only-of-type {\n",
+       "        vertical-align: middle;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe tbody tr th {\n",
+       "        vertical-align: top;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe thead th {\n",
+       "        text-align: right;\n",
+       "    }\n",
+       "</style>\n",
+       "<table border=\"1\" class=\"dataframe\">\n",
+       "  <thead>\n",
+       "    <tr style=\"text-align: right;\">\n",
+       "      <th></th>\n",
+       "      <th></th>\n",
+       "      <th>Value</th>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>Date</th>\n",
+       "      <th>Border</th>\n",
+       "      <th></th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "    <tr>\n",
+       "      <th rowspan=\"2\" valign=\"top\">1996</th>\n",
+       "      <th>US-Canada Border</th>\n",
+       "      <td>105762398</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>US-Mexico Border</th>\n",
+       "      <td>207586832</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th rowspan=\"2\" valign=\"top\">1997</th>\n",
+       "      <th>US-Canada Border</th>\n",
+       "      <td>97570223</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>US-Mexico Border</th>\n",
+       "      <td>261050472</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th rowspan=\"2\" valign=\"top\">1998</th>\n",
+       "      <th>US-Canada Border</th>\n",
+       "      <td>93097261</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>US-Mexico Border</th>\n",
+       "      <td>274125727</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th rowspan=\"2\" valign=\"top\">1999</th>\n",
+       "      <th>US-Canada Border</th>\n",
+       "      <td>94573669</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>US-Mexico Border</th>\n",
+       "      <td>293109831</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th rowspan=\"2\" valign=\"top\">2000</th>\n",
+       "      <th>US-Canada Border</th>\n",
+       "      <td>95776909</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>US-Mexico Border</th>\n",
+       "      <td>290368364</td>\n",
+       "    </tr>\n",
+       "  </tbody>\n",
+       "</table>\n",
+       "</div>"
+      ],
+      "text/plain": [
+       "                           Value\n",
+       "Date Border                     \n",
+       "1996 US-Canada Border  105762398\n",
+       "     US-Mexico Border  207586832\n",
+       "1997 US-Canada Border   97570223\n",
+       "     US-Mexico Border  261050472\n",
+       "1998 US-Canada Border   93097261\n",
+       "     US-Mexico Border  274125727\n",
+       "1999 US-Canada Border   94573669\n",
+       "     US-Mexico Border  293109831\n",
+       "2000 US-Canada Border   95776909\n",
+       "     US-Mexico Border  290368364"
+      ]
+     },
+     "execution_count": 88,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "# consider people counting measure, sum value and set date.year as index\n",
+    "df_date_year = people[['Date','Border','Value']].set_index('Date')\n",
+    "\n",
+    "# group by date.year and border\n",
+    "df_date_year = df_date_year.groupby([df_date_year.index.year, 'Border']).sum()\n",
+    "df_date_year.head(10)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# histogram? "
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 89,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "<div>\n",
+       "<style scoped>\n",
+       "    .dataframe tbody tr th:only-of-type {\n",
+       "        vertical-align: middle;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe tbody tr th {\n",
+       "        vertical-align: top;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe thead th {\n",
+       "        text-align: right;\n",
+       "    }\n",
+       "</style>\n",
+       "<table border=\"1\" class=\"dataframe\">\n",
+       "  <thead>\n",
+       "    <tr style=\"text-align: right;\">\n",
+       "      <th></th>\n",
+       "      <th></th>\n",
+       "      <th>Value</th>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>Date</th>\n",
+       "      <th>Measure</th>\n",
+       "      <th></th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "    <tr>\n",
+       "      <th rowspan=\"4\" valign=\"top\">1996</th>\n",
+       "      <th>Bus Passengers</th>\n",
+       "      <td>5813778</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>Pedestrians</th>\n",
+       "      <td>34717351</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>Personal Vehicle Passengers</th>\n",
+       "      <td>272593220</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>Train Passengers</th>\n",
+       "      <td>224881</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th rowspan=\"4\" valign=\"top\">1997</th>\n",
+       "      <th>Bus Passengers</th>\n",
+       "      <td>6896919</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>Pedestrians</th>\n",
+       "      <td>44461186</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>Personal Vehicle Passengers</th>\n",
+       "      <td>307001980</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>Train Passengers</th>\n",
+       "      <td>260610</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th rowspan=\"2\" valign=\"top\">1998</th>\n",
+       "      <th>Bus Passengers</th>\n",
+       "      <td>7608484</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>Pedestrians</th>\n",
+       "      <td>45060023</td>\n",
+       "    </tr>\n",
+       "  </tbody>\n",
+       "</table>\n",
+       "</div>"
+      ],
+      "text/plain": [
+       "                                      Value\n",
+       "Date Measure                               \n",
+       "1996 Bus Passengers                 5813778\n",
+       "     Pedestrians                   34717351\n",
+       "     Personal Vehicle Passengers  272593220\n",
+       "     Train Passengers                224881\n",
+       "1997 Bus Passengers                 6896919\n",
+       "     Pedestrians                   44461186\n",
+       "     Personal Vehicle Passengers  307001980\n",
+       "     Train Passengers                260610\n",
+       "1998 Bus Passengers                 7608484\n",
+       "     Pedestrians                   45060023"
+      ]
+     },
+     "execution_count": 89,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "# consider people counting measure, sum values and set date as index\n",
+    "df_dm = people[['Date','Measure','Value']].set_index('Date')\n",
+    "\n",
+    "# group by date.years and border\n",
+    "df_dm = df_dm.groupby([df_dm.index.year,'Measure']).sum()\n",
+    "df_dm.head(10)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# histogram? \n",
+    "# -> output 27"
+   ]
+  }
+ ],
+ "metadata": {
+  "colab": {
+   "name": "Cleaning.ipynb",
+   "provenance": []
+  },
+  "kernel_info": {
+   "name": "python3"
+  },
+  "kernelspec": {
+   "display_name": "Python 3",
+   "language": "python",
+   "name": "python3"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.7.3"
+  },
+  "nteract": {
+   "version": "0.15.0"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 1
+}
